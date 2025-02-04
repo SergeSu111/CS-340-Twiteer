@@ -17,7 +17,7 @@ const useToastListener = (): ToastListener => {
   return {
     displayInfoMessage: displayInfoToast,
     displayErrorMessage: (message: string, bootstrapClasses?: string) =>
-      displayErrorToast(message, 0, bootstrapClasses),
+    displayErrorToast(message, 0, bootstrapClasses),
     clearLastInfoMessage: deleteLastInfoToast,
   };
 };
