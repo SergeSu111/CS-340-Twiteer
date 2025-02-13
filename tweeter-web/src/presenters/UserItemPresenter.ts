@@ -5,7 +5,7 @@ export interface UserItemView {
     dispalyErrorMessage: (message: string) => void
 }
 
-export abstract class UserItemPresenter
+export abstract class UseritemPresenter
 {   
     private _hasMoreItems = true;
     private _lastItem: User | null = null;

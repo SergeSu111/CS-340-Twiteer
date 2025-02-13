@@ -1,13 +1,13 @@
 import { AuthToken } from "tweeter-shared";
 import { FollowService } from "../model/service/FollowService";
-import { UserItemPresenter, UserItemView } from "./UserItemPresenter";
+import { UseritemPresenter, UserItemView } from "./UseritemPresenter";
 
 
 // 每一个Presenter class都需要一个 view interface来与实际的UI进行通信. 所以当Presenter得到后端的数据等,
 // 再调用这个interface里的方法与前端连接. 
 export const PAGE_SIZE = 10;
 
-export class FollowerPresenter extends UserItemPresenter
+export class FollowerPresenter extends UseritemPresenter
 {
     // 因为Presenter是连接前端view 和 后端service的桥梁 所以要callService的class
     private followService: FollowService;

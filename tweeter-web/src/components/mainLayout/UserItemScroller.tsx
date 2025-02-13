@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import UserItem from "../userItem/UserItem";
 import useToastListener from '../toaster/ToastListenerHook';
-import { UserItemPresenter, UserItemView } from "../../presenters/UserItemPresenter";
+import { UseritemPresenter, UserItemView } from "../../presenters/UseritemPresenter";
 
 
 
@@ -14,7 +14,7 @@ interface Props {
   
  
   // 传入followeeView接口 给presenter 返回一个presenter
-  presenterGenerator: (view: UserItemView) => UserItemPresenter;
+  presenterGenerator: (view: UserItemView) => UseritemPresenter;
 }
 
 const UserItemScroller = (props: Props) => {
