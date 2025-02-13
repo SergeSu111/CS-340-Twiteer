@@ -12,12 +12,13 @@ import Login from "./components/authentication/login/Login";
 import Register from "./components/authentication/register/Register";
 import MainLayout from "./components/mainLayout/MainLayout";
 import Toaster from "./components/toaster/Toaster";
-import { AuthToken, User, FakeData, Status } from "tweeter-shared";
-import UserItemScroller from "./components/mainLayout/UserItemScroller";
+import { AuthToken, FakeData, Status } from "tweeter-shared";
 import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import { FolloweePresenter } from "./presenters/FolloweePresenter";
 import { UserItemView } from "./presenters/UseritemPresenter";
 import { FollowerPresenter } from './presenters/FollowerPresenter';
+import UserItemScroller from "./components/mainLayout/UseritemScroller";
+
 
 const App = () => {
   const { currentUser, authToken } = useContext(UserInfoContext);
