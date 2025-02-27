@@ -1,21 +1,18 @@
 import { AuthToken, FakeData, Status, User, Type } from "tweeter-shared";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserNavigation from "../userItem/UserNavigationHook";
+import useUserInfo from "../userInfo/UserInfoHook";
 
 interface Props {
   status: Status;
 }
 
 const Post = (props: Props) => {
-  const { setDisplayedUser, currentUser, authToken } =
-    useContext(UserInfoContext);
-  const { displayErrorMessage } = useToastListener();
+  useUserInfo();
+  useToastListener();
 
-  const {navigateToUser} = useUserNavigation();
-
+  const navigateToUser = useUserNavigation()
   return (
     <>
       {props.status.segments.map((segment, index) =>
@@ -47,3 +44,4 @@ const Post = (props: Props) => {
 };
 
 export default Post;
+

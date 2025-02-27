@@ -1,50 +1,34 @@
 import "./PostStatus.css";
 import { useState } from "react";
-import { useContext } from "react";
-import { UserInfoContext } from "../userInfo/UserInfoProvider";
-import { AuthToken, Status } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
+import useUserInfo from "../userInfo/UserInfoHook";
+import { PostStatusPresenter, PostStatusView } from "../../presenters/PostStatusPresenter";
 
-const PostStatus = () => {
+interface Props {
+  presenterGenerator: (view: PostStatusView) => PostStatusPresenter
+}
+
+const PostStatus = (props: Props) => {
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
     useToastListener();
 
-  const { currentUser, authToken } = useContext(UserInfoContext);
+  const { currentUser, authToken } = useUserInfo();
   const [post, setPost] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const submitPost = async (event: React.MouseEvent) => {
-    event.preventDefault();
+  const listener: PostStatusView = {
+    displayErrorMessage: displayErrorMessage,
+    displayInfoMessage: displayInfoMessage,
+    clearLastInfoMessage: clearLastInfoMessage,
+    setPost: setPost,
+    setIsLoading: setIsLoading
+  }
 
-    try {
-      setIsLoading(true);
-      displayInfoMessage("Posting status...", 0);
+  const [presenter] = useState(props.presenterGenerator(listener))
 
-      const status = new Status(post, currentUser!, Date.now());
-
-      await postStatus(authToken!, status);
-
-      setPost("");
-      displayInfoMessage("Status posted!", 2000);
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to post the status because of exception: ${error}`
-      );
-    } finally {
-      clearLastInfoMessage();
-      setIsLoading(false);
-    }
-  };
-
-  const postStatus = async (
-    authToken: AuthToken,
-    newStatus: Status
-  ): Promise<void> => {
-    // Pause so we can see the logging out message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server to post the status
-  };
+  const submitPost = (event: React.MouseEvent) => {
+    presenter.submitPost(event, post, currentUser, authToken)
+  }
 
   const clearPost = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -62,6 +46,7 @@ const PostStatus = () => {
           <textarea
             className="form-control"
             id="postStatusTextArea"
+            aria-label = "postStatusText" 
             rows={10}
             placeholder="What's on your mind?"
             value={post}
@@ -73,6 +58,7 @@ const PostStatus = () => {
         <div className="form-group">
           <button
             id="postStatusButton"
+            aria-label = "postStatus" 
             className="btn btn-md btn-primary me-1"
             type="button"
             disabled={checkButtonStatus()}
@@ -91,6 +77,7 @@ const PostStatus = () => {
           </button>
           <button
             id="clearStatusButton"
+            aria-label="clearStatus"
             className="btn btn-md btn-secondary"
             type="button"
             disabled={checkButtonStatus()}

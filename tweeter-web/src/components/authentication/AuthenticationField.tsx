@@ -2,15 +2,13 @@ import { KeyboardEventHandler, useState } from "react";
 
 interface AuthenticationFieldProps {
   // 用户按下 Enter 键时要触发的函数，可选
-  alias: string;
-  password: string;
+ 
   onAliasChange: (val: string) => void;
   onPasswordChange: (val: string) => void;
   onEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const AuthenticationField: React.FC<AuthenticationFieldProps> = ({ alias,
-  password,
+const AuthenticationField: React.FC<AuthenticationFieldProps> = ({ 
   onAliasChange,
   onPasswordChange,
   onEnter}) =>
@@ -23,6 +21,7 @@ const AuthenticationField: React.FC<AuthenticationFieldProps> = ({ alias,
           className="form-control"
           size={50}
           id="aliasInput"
+          aria-label = "alias"
           placeholder="name@example.com"
           onKeyDown={(e) => 
           {
@@ -40,6 +39,7 @@ const AuthenticationField: React.FC<AuthenticationFieldProps> = ({ alias,
           type="password"
           className="form-control"
           id="passwordInput"
+          aria-label = "password"
           placeholder="Password"
           onKeyDown={(e) => {
             if (e.key === "Enter" && onEnter) {

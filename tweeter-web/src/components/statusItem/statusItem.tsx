@@ -1,28 +1,27 @@
 import { MouseEvent, ReactNode, useContext, useState } from "react";
-import { Status } from "tweeter-shared/dist/model/domain/Status";
+
 import Post from "./Post";
 import { Link } from "react-router-dom";
-import { User } from "tweeter-shared/dist/model/domain/User";
-import { AuthToken } from "tweeter-shared/dist/model/domain/AuthToken";
+
 import { FakeData } from "tweeter-shared/dist/util/FakeData";
 import useToastListener from "../toaster/ToastListenerHook";
 import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import useUserNavigation from "../userItem/UserNavigationHook";
+import { Status, User } from "tweeter-shared";
 
 interface Props {
     status: Status;        // 帖子本身
-    user: User;            // 发帖用户
-    formattedDate: ReactNode;
 }
+export const PAGE_SIZE = 10;
 const StatusItem = (item: Props) =>{
-    const {navigateToUser} = useUserNavigation();
+    const navigateToUser = useUserNavigation();
     return(
             <div className="col bg-light mx-0 px-0">
               <div className="container px-0">
                 <div className="row mx-0 px-0">
                   <div className="col-auto p-3">
                     <img
-                      src={item.user.imageUrl}
+                      src={item.status.user.imageUrl}
                       className="img-fluid"
                       width="80"
                       alt="Posting user"
@@ -31,17 +30,17 @@ const StatusItem = (item: Props) =>{
                   <div className="col">
                     <h2>
                       <b>
-                        {item.user.firstName} {item.user.lastName}
+                      {item.status.user.firstName} {item.status.user.lastName}
                       </b>{" "}
                       -{" "}
                       <Link
-                        to={item.user.alias}
+                        to={item.status.user.alias}
                         onClick={(event) => navigateToUser(event)}
                       >
-                        {item.user.alias}
+                        {item.status.user.alias}
                       </Link>
                     </h2>
-                    {item.formattedDate}
+                    {item.status.formattedDate}
                     <br />
                     <Post status={item.status} />
                   </div>

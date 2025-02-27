@@ -1,6 +1,6 @@
 import { FakeData } from "tweeter-shared";
-import { AuthToken } from "tweeter-shared/dist/model/domain/AuthToken";
-import { User } from "tweeter-shared/dist/model/domain/User";
+import { AuthToken } from "tweeter-shared";
+import { User } from "tweeter-shared";
 
 export class FollowService {
     public async loadMoreFollowers (

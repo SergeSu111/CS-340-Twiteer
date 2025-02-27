@@ -1,30 +1,24 @@
-import { useContext } from "react";
-import { UserInfoContext } from "../userInfo/UserInfoProvider";
-import { User } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import UserItem from "../userItem/UserItem";
-import useToastListener from '../toaster/ToastListenerHook';
-import { UseritemPresenter, UserItemView } from "../../presenters/UseritemPresenter";
+import useToastListener from "../toaster/ToastListenerHook";
+import useUserInfo from "../userInfo/UserInfoHook";
+import {
+  PagedItemPresenter,
+  PagedItemView,
+} from "../../presenters/PagedItemPresenter";
 
-
-
-
-interface Props {
-  
- 
-  // 传入followeeView接口 给presenter 返回一个presenter
-  presenterGenerator: (view: UserItemView) => UseritemPresenter;
+interface Props<T, U> {
+  presenterGenerator: (view: PagedItemView<T>) => PagedItemPresenter<T, U>;
+  itemComponentGenerator: (item: T) => JSX.Element;
 }
 
-const UserItemScroller = (props: Props) => {
+const ItemScroller = <T, U>(props: Props<T, U>) => {
   const { displayErrorMessage } = useToastListener();
-  const [items, setItems] = useState<User[]>([]);
-  const [newItems, setNewItems] = useState<User[]>([]);
+  const [items, setItems] = useState<T[]>([]);
+  const [newItems, setNewItems] = useState<T[]>([]);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
-
-  const { displayedUser, authToken } = useContext(UserInfoContext);
+  const { displayedUser, authToken } = useUserInfo();
 
   // Initialize the component whenever the displayed user changes
   useEffect(() => {
@@ -33,38 +27,34 @@ const UserItemScroller = (props: Props) => {
 
   // Load initial items whenever the displayed user changes. Done in a separate useEffect hook so the changes from reset will be visible.
   useEffect(() => {
-    if(changedDisplayedUser) {
+    if (changedDisplayedUser) {
       loadMoreItems();
     }
   }, [changedDisplayedUser]);
 
   // Add new items whenever there are new items to add
   useEffect(() => {
-    if(newItems) {
+    if (newItems) {
       setItems([...items, ...newItems]);
     }
-  }, [newItems])
+  }, [newItems]);
 
   const reset = async () => {
     setItems([]);
     setNewItems([]);
     setChangedDisplayedUser(true);
     presenter.reset();
-  }
+  };
 
-  // 实现view接口 这样Presenter来的数据可以直接到这个UI前端里
-  const listener: UserItemView = 
-  {
-    addItems: (newItems: User[]) =>
-      setNewItems(newItems),
-    dispalyErrorMessage: displayErrorMessage
-  }
+  const listener: PagedItemView<T> = {
+    addItems: (newItems: T[]) => setNewItems(newItems),
+    displayErrorMessage: displayErrorMessage,
+  };
 
-  const presenter = props.presenterGenerator(listener);
-  // needs to be refactored
+  const [presenter] = useState(props.presenterGenerator(listener));
 
-  const loadMoreItems = async () =>  {
-    presenter.loadMoreItems(authToken!, displayedUser!.alias)
+  const loadMoreItems = async () => {
+    presenter.loadMoreItems(authToken!, displayedUser!);
     setChangedDisplayedUser(false);
   };
 
@@ -82,12 +72,11 @@ const UserItemScroller = (props: Props) => {
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <UserItem value={item} />
+            {props.itemComponentGenerator(item)}
           </div>
         ))}
       </InfiniteScroll>
     </div>
   );
 };
-
-export default UserItemScroller;
+export default ItemScroller;

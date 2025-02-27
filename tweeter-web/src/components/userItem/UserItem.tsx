@@ -14,7 +14,7 @@ const UserItem = (props: Props) => {
   const { setDisplayedUser, currentUser, authToken } =
     useContext(UserInfoContext);
 
-  const {navigateToUser} = useUserNavigation();
+  const navigateToUser = useUserNavigation();
 
   return (
     <div className="col bg-light mx-0 px-0">

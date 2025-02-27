@@ -1,6 +1,4 @@
 import "./App.css";
-import { useContext } from "react";
-import { UserInfoContext } from "./components/userInfo/UserInfoProvider";
 import {
   BrowserRouter,
   Navigate,
@@ -12,16 +10,21 @@ import Login from "./components/authentication/login/Login";
 import Register from "./components/authentication/register/Register";
 import MainLayout from "./components/mainLayout/MainLayout";
 import Toaster from "./components/toaster/Toaster";
-import { AuthToken, FakeData, Status } from "tweeter-shared";
-import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
+import useUserInfo from "./components/userInfo/UserInfoHook";
 import { FolloweePresenter } from "./presenters/FolloweePresenter";
-import { UserItemView } from "./presenters/UseritemPresenter";
-import { FollowerPresenter } from './presenters/FollowerPresenter';
-import UserItemScroller from "./components/mainLayout/UseritemScroller";
-
+import { FollowerPresenter } from "./presenters/FollowerPresenter";
+import FeedPresenter from "./presenters/FeedPresenter";
+import StoryPresenter from "./presenters/StoryPresenter";
+import { LoginPresenter } from "./presenters/LoginPresenter";
+import { AuthenticationView } from "./presenters/AuthenticationPresenter";
+import ItemScroller from "./components/mainLayout/ItemScroller";
+import { Status, User } from "tweeter-shared";
+import { PagedItemView } from "./presenters/PagedItemPresenter";
+import UserItem from "./components/userItem/UserItem";
+import StatusItem from "./components/statusItem/statusItem";
 
 const App = () => {
-  const { currentUser, authToken } = useContext(UserInfoContext);
+  const { currentUser, authToken } = useUserInfo();
 
   const isAuthenticated = (): boolean => {
     return !!currentUser && !!authToken;
@@ -42,50 +45,59 @@ const App = () => {
 };
 
 const AuthenticatedRoutes = () => {
-  
-
-  const loadMoreFeedItems = async (
-      authToken: AuthToken,
-      userAlias: string,
-      pageSize: number,
-      lastItem: Status | null
-    ): Promise<[Status[], boolean]> => {
-      // TODO: Replace with the result of calling server
-      return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-    };
-
-
-    const loadMoreStoryItems = async (
-      authToken: AuthToken,
-      userAlias: string,
-      pageSize: number,
-      lastItem: Status | null
-    ): Promise<[Status[], boolean]> => {
-      // TODO: Replace with the result of calling server
-      return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-    };
-
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<Navigate to="/feed" />} />
-        <Route path="feed" element={<StatusItemScroller itemDescription={"feed items"} loadMore={loadMoreFeedItems}/>} />
-        <Route path="story" element={<StatusItemScroller itemDescription={"story items"} loadMore={loadMoreStoryItems}/>}/>
+        <Route
+          path="feed"
+          element={
+            <ItemScroller
+              key={1}
+              presenterGenerator={(view: PagedItemView<Status>) =>
+                new FeedPresenter(view)
+              }
+              itemComponentGenerator={(item: Status) => (
+                <StatusItem status={item} />
+              )}
+            />
+          }
+        />
+        <Route
+          path="story"
+          element={
+            <ItemScroller
+              key={2}
+              presenterGenerator={(view: PagedItemView<Status>) =>
+                new StoryPresenter(view)
+              }
+              itemComponentGenerator={(item: Status) => (
+                <StatusItem status={item} />
+              )}
+            />
+          }
+        />
         <Route
           path="followees"
           element={
-            <UserItemScroller
-              key={1}
-              presenterGenerator={(view: UserItemView) => new FolloweePresenter(view)}
+            <ItemScroller
+              key={3}
+              presenterGenerator={(view: PagedItemView<User>) =>
+                new FolloweePresenter(view)
+              }
+              itemComponentGenerator={(item: User) => <UserItem value={item} />}
             />
           }
         />
         <Route
           path="followers"
           element={
-            <UserItemScroller
-              key={2} 
-              presenterGenerator={(view: UserItemView) => new FollowerPresenter(view)}
+            <ItemScroller
+              key={4}
+              presenterGenerator={(view: PagedItemView<User>) =>
+                new FollowerPresenter(view)
+              }
+              itemComponentGenerator={(item: User) => <UserItem value={item} />}
             />
           }
         />
@@ -108,4 +120,4 @@ const UnauthenticatedRoutes = () => {
   );
 };
 
-export default App;
+export default App
